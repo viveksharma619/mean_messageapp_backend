@@ -4,6 +4,7 @@ var moment = require('moment');
 module.exports = {
   register : function(req, res){
     console.log(req.body);
+
     User.findOne({email: req.body.email} , function(err, existinguser){
       if(existinguser)
       {
@@ -20,6 +21,28 @@ module.exports = {
         res.status(200).send({ token: createToken(result)});
       });
     });
+    },
+  login: function (req, res) {
+        User.findOne({
+            email: req.body.email
+        }, function (err, user) {
+
+            if (!user)
+                return res.status(401).send({
+                    message: 'Email or Password invalid'
+                });
+
+            if (req.body.pwd == user.pwd) {
+                console.log(req.body, user.pwd)
+                res.send({
+                    token: createToken(user)
+                });
+            } else {
+                return res.status(401).send({
+                    message: 'Invalid email and/or password'
+                });
+            }
+        });
     }
 }
 
